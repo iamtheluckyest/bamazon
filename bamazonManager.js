@@ -1,5 +1,6 @@
 var inquirer = require ('inquirer');
 var mysql = require ('mysql');
+var Table = require('cli-table');
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -46,14 +47,14 @@ function chooseAction(){
 function viewProducts() {
     connection.query("SELECT * FROM products", function(err, res) {
         if (err) throw err;
+        var table = new Table({
+            head: ['Id', 'Item', 'Dpmt', 'Price ($)', "Inventory"]
+          , colWidths: [5, 25, 25, 15, 15]
+        });
         for (i=0; i < res.length; i++) {
-            console.log("\nId: " + res[i].item_id);
-            console.log("Item name: " + res[i].product_name);
-            console.log("Department: " + res[i].department_name);
-            console.log("Price: $" + res[i].price);
-            console.log("Stock quantity: " + res[i].stock_quantity);
-            console.log("-----------------------------------");
+            table.push([res[i].item_id, res[i].product_name, res[i].department_name, res[i].price, res[i].stock_quantity]);
         };
+        console.log(table.toString());
         chooseAction();
     });
 };
@@ -61,14 +62,14 @@ function viewProducts() {
 function viewLowInv() {
     connection.query("SELECT * FROM products WHERE stock_quantity < 5", function(err, res) {
         if (err) throw err;
+        var table = new Table({
+            head: ['Id', 'Item', 'Dpmt', 'Price ($)', "Inventory"]
+          , colWidths: [5, 25, 25, 15, 15]
+        });
         for (i=0; i < res.length; i++) {
-            console.log("\nId: " + res[i].item_id);
-            console.log("Item name: " + res[i].product_name);
-            console.log("Department: " + res[i].department_name);
-            console.log("Price: $" + res[i].price);
-            console.log("Stock quantity: " + res[i].stock_quantity);
-            console.log("-----------------------------------");
+            table.push([res[i].item_id, res[i].product_name, res[i].department_name, res[i].price, res[i].stock_quantity]);
         };
+        console.log(table.toString());        
         chooseAction();
     });
 };

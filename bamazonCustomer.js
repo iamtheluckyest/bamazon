@@ -1,5 +1,6 @@
 var inquirer = require ('inquirer');
 var mysql = require ('mysql');
+var Table = require('cli-table');
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -12,14 +13,15 @@ var connection = mysql.createConnection({
 connection.query("SELECT * FROM products", function(err, res) {
     if (err) throw err;
     var productIds = [];
+    var table = new Table({
+        head: ['Id', 'Item', 'Dpmt', 'Price ($)']
+      , colWidths: [5, 25, 25, 15]
+    });
     for (i=0; i < res.length; i++) {
-        console.log("\nId: " + res[i].item_id);
-        console.log("Item name: " + res[i].product_name);
-        console.log("Department: " + res[i].department_name);
-        console.log("Price: $" + res[i].price);
-        console.log("-----------------------------------");
+        table.push([res[i].item_id, res[i].product_name, res[i].department_name, res[i].price]);
         productIds.push(res[i].item_id);
     };
+    console.log(table.toString());
     selectItem(productIds, res);
 });
 
@@ -40,7 +42,7 @@ function selectItem(productIds, res){
             var selectedItem = res.filter(function( obj ) {
                 return obj.item_id == response.productId;
               });
-            console.log(selectedItem)
+            // console.log(selectedItem)
             selectQuantity(productIds, res, selectedItem);
         };
     });
